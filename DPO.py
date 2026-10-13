@@ -3,7 +3,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from torch.optim import AdamW
-
+from functools import partial
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -86,8 +86,8 @@ class PreferenceDataset(Dataset):
         chosen_response = sample["chosen"]
         rejected_response = sample["rejected"]
 
-        chosen_ids = self.tokenizer(chosen_response, truncation=True, padding="max_length", max_length=self.max_length)
-        rejected_ids = self.tokenizer(rejected_response, truncation=True, padding="max_length", max_length=self.max_length)
+        chosen_ids = self.tokenizer(chosen_response, truncation=True, max_length=self.max_length)
+        rejected_ids = self.tokenizer(rejected_response, truncation=True, max_length=self.max_length)
 
         chosen_inp_ids = torch.tensor(chosen_ids["input_ids"])
         chosen_attn_mask = torch.tensor(chosen_ids["attention_mask"])
@@ -119,8 +119,46 @@ class PreferenceDataset(Dataset):
 train_dataset = PreferenceDataset(train_dataset, tokenizer, 512)
 test_dataset = PreferenceDataset(test_dataset, tokenizer, 512)
 
-train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
+def collate_fn(samples, tokenizer):
+    # Apply dynamic padding
+    max_len = 0
+    for sample in samples: 
+        max_len = max(max_len, len(sample["chosen_inp_ids"]), len(sample["rejected_inp_ids"]))
+
+    batch = { 
+        "chosen_inp_ids" : [], 
+        "chosen_attn_mask" : [], 
+        "rejected_inp_ids" : [], 
+        "rejected_attn_mask" : [],
+        "chosen_response_mask" : [], 
+        "rejected_response_mask" : []
+    }
+
+    for sample in samples: 
+        for key in batch: 
+            seq = sample[key]
+            cur_len = len(seq) 
+            pad_len = max_len - cur_len
+
+            pad_token = None
+            if "inp_ids" in key: 
+                pad_token = tokenizer.pad_token_id
+            else: 
+                pad_token = 0
+
+            padding = torch.full((pad_len, ), pad_token, dtype = seq.dtype) 
+            seq = torch.cat([seq, padding])
+
+            batch[key].append(seq)
+
+    for key in batch: 
+        batch[key] = torch.stack(batch[key])
+
+    return batch
+    
+
+train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True, collate_fn = partial(collate_fn, tokenizer=tokenizer))
+test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False, collate_fn = partial(collate_fn, tokenizer=tokenizer))
 
 one_batch = next(iter(train_loader)) 
 print(one_batch.keys())
