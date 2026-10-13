@@ -34,12 +34,51 @@ for param in reference_model.parameters():
 
 class PreferenceDataset(Dataset): 
     def __init__(self, dataset, tokenizer, max_length): 
-        self.dataset = dataset 
+        self.ds = dataset.select(range(1000)) 
         self.tokenizer = tokenizer 
-        self.max_length = max_length
+        self.max_length = max_length 
+        self.dataset = [] 
+        skipped = 0
+        for i in range(len(self.ds)): 
+            chosen = self.ds[i]["chosen"] 
+            rej = self.ds[i]["rejected"] 
+            
+            chosen_ids = self.tokenizer(chosen, truncation=True, padding="max_length", max_length=self.max_length) 
+            rej_ids = self.tokenizer(rej, truncation=True, padding="max_length", max_length=self.max_length) 
 
+            chosen_inp_ids = torch.tensor(chosen_ids["input_ids"])
+            chosen_attn_mask = torch.tensor(chosen_ids["attention_mask"]) # Tokens + padding 
+            chosen_real_tokens = chosen_attn_mask.sum() # Tokens = prefix + differed response
+    
+            rejected_inp_ids = torch.tensor(rej_ids["input_ids"])
+            rejected_attn_mask = torch.tensor(rej_ids["attention_mask"])
+            rejected_real_tokens = rejected_attn_mask.sum()
+
+            common = self._get_common_prefix_length(chosen_inp_ids, chosen_attn_mask, rejected_inp_ids, rejected_attn_mask)
+
+            if (chosen_real_tokens - common) > 0 and (rejected_real_tokens - common) > 0 : #It ensures both sequences have real tokens remaining after the shared prefix.
+                self.dataset.append({"chosen" : chosen, "rejected" : rej})
+            else: # fully truncated and no differing response
+                skipped += 1
+
+        print(f"Skipped instances : {skipped}")
+    
     def __len__(self): 
         return len(self.dataset)
+
+    def _get_common_prefix_length(self, chosen_inp_ids, chosen_attn_mask, rejected_inp_ids, rejected_attn_mask):
+        # Find the common prefix 
+        common = 0 
+        for i in range(self.max_length): 
+            if chosen_attn_mask[i] and rejected_attn_mask[i]: 
+                if chosen_inp_ids[i] == rejected_inp_ids[i]: 
+                    common += 1
+                else: 
+                    break #common prompt/prefix boundary ended
+            else: 
+                break # One of the input id is a padding tokens - Padding tokens don't come in our prefix 
+
+        return common
 
     def __getitem__(self, idx): 
         sample = self.dataset[idx]
@@ -50,17 +89,30 @@ class PreferenceDataset(Dataset):
         chosen_ids = self.tokenizer(chosen_response, truncation=True, padding="max_length", max_length=self.max_length)
         rejected_ids = self.tokenizer(rejected_response, truncation=True, padding="max_length", max_length=self.max_length)
 
-        chosen_inp_ids = chosen_ids["input_ids"]
-        chosen_attn_mask = chosen_ids["attention_mask"]
+        chosen_inp_ids = torch.tensor(chosen_ids["input_ids"])
+        chosen_attn_mask = torch.tensor(chosen_ids["attention_mask"])
 
-        rejected_inp_ids = rejected_ids["input_ids"]
-        rejected_attn_mask = rejected_ids["attention_mask"]
+        rejected_inp_ids = torch.tensor(rejected_ids["input_ids"])
+        rejected_attn_mask = torch.tensor(rejected_ids["attention_mask"])
 
+        common = self._get_common_prefix_length(chosen_inp_ids, chosen_attn_mask, rejected_inp_ids, rejected_attn_mask)
+        
+        chosen_response_mask = torch.tensor([0] * common + [1] * (len(chosen_inp_ids) - common))
+        rejected_response_mask = torch.tensor([0] * common + [1] * (len(rejected_inp_ids) - common))
+        
+        #response_mask: 0 for the shared prefix, 1 afterward.
+        #attention_mask: 1 for real tokens, 0 for padding.
+        
+        chosen_response_mask = chosen_response_mask * chosen_attn_mask # Making sure the last padding tokens are 0 
+        rejected_response_mask = rejected_response_mask * rejected_attn_mask
+        
         return {
-            "chosen_inp_ids" : torch.tensor(chosen_inp_ids), 
-            "chosen_attn_mask" : torch.tensor(chosen_attn_mask), 
-            "rejected_inp_ids" : torch.tensor(rejected_inp_ids), 
-            "rejected_attn_mask" : torch.tensor(rejected_attn_mask)
+            "chosen_inp_ids" : chosen_inp_ids, 
+            "chosen_attn_mask" : chosen_attn_mask, 
+            "rejected_inp_ids" : rejected_inp_ids, 
+            "rejected_attn_mask" : rejected_attn_mask,
+            "chosen_response_mask" : chosen_response_mask, 
+            "rejected_response_mask" : rejected_response_mask
         }
 
 
@@ -75,7 +127,7 @@ print(one_batch.keys())
 print(one_batch["chosen_inp_ids"].shape, one_batch["chosen_attn_mask"].shape)
 
 
-def find_log_probs(model, input_ids, attn_mask): 
+def find_log_probs(model, input_ids, attn_mask, response_mask): 
     output = model(input_ids = input_ids, attention_mask = attn_mask) 
     logits = output.logits # B, S -> B, S, V
     
@@ -95,6 +147,11 @@ def find_log_probs(model, input_ids, attn_mask):
     mask = attn_mask[:, 1:] # (B, S-1)
     # To get one score per sequence, multiply by mask(pad tokens are zeroed out) and sum the log probs 
     seq_probs = filtered * mask
+
+    # DPO pipeline must ignore the prompt tokens when calculating sequence log-probabilities and score only the assistant's response.
+    response_mask = response_mask[:, 1:] 
+    seq_probs = seq_probs * response_mask
+    
     seq_probs = seq_probs.sum(dim=1) # (B, S-1) -> (B, )
 
     return seq_probs
@@ -123,13 +180,15 @@ for epoch in range(1, num_epochs+1):
         chosen_attn_mask = batch["chosen_attn_mask"].to(device)
         rejected_inp_ids = batch["rejected_inp_ids"].to(device)
         rejected_attn_mask = batch["rejected_attn_mask"].to(device)
-            
-        policy_chosen_logprobs = find_log_probs(policy_model, chosen_inp_ids, chosen_attn_mask)
-        policy_rejected_logprobs = find_log_probs(policy_model, rejected_inp_ids, rejected_attn_mask)
+        chosen_response_mask = batch["chosen_response_mask"].to(device)
+        rejected_response_mask = batch["rejected_response_mask"].to(device)
+    
+        policy_chosen_logprobs = find_log_probs(policy_model, chosen_inp_ids, chosen_attn_mask, chosen_response_mask)
+        policy_rejected_logprobs = find_log_probs(policy_model, rejected_inp_ids, rejected_attn_mask, rejected_response_mask)
     
         with torch.no_grad(): 
-            reference_chosen_logprobs = find_log_probs(reference_model, chosen_inp_ids, chosen_attn_mask)
-            reference_rejected_logprobs = find_log_probs(reference_model, rejected_inp_ids, rejected_attn_mask)
+            reference_chosen_logprobs = find_log_probs(reference_model, chosen_inp_ids, chosen_attn_mask, chosen_response_mask)
+            reference_rejected_logprobs = find_log_probs(reference_model, rejected_inp_ids, rejected_attn_mask, rejected_response_mask)
     
         r_c = policy_chosen_logprobs - reference_chosen_logprobs
         r_r = policy_rejected_logprobs - reference_rejected_logprobs
@@ -148,17 +207,25 @@ for epoch in range(1, num_epochs+1):
 policy_model.eval()
 with torch.no_grad():
     preference_accuracy = 0 
+    ref_accuracy = 0 
+    dpo_accuracy = 0
     for batch in test_loader: 
         chosen_inp_ids = batch["chosen_inp_ids"].to(device)
         chosen_attn_mask = batch["chosen_attn_mask"].to(device)
         rejected_inp_ids = batch["rejected_inp_ids"].to(device)
         rejected_attn_mask = batch["rejected_attn_mask"].to(device)
+        chosen_response_mask = batch["chosen_response_mask"].to(device)
+        rejected_response_mask = batch["rejected_response_mask"].to(device)
     
-        policy_chosen_logprobs = find_log_probs(policy_model, chosen_inp_ids, chosen_attn_mask) 
-        policy_rejected_logprobs = find_log_probs(policy_model, rejected_inp_ids, rejected_attn_mask) 
+        policy_chosen_logprobs = find_log_probs(policy_model, chosen_inp_ids, chosen_attn_mask, chosen_response_mask) 
+        policy_rejected_logprobs = find_log_probs(policy_model, rejected_inp_ids, rejected_attn_mask, rejected_response_mask) 
 
-        reference_chosen_logprobs = find_log_probs(reference_model, chosen_inp_ids, chosen_attn_mask) 
-        reference_rejected_logprobs = find_log_probs(reference_model, rejected_inp_ids, rejected_attn_mask) 
+        reference_chosen_logprobs = find_log_probs(reference_model, chosen_inp_ids, chosen_attn_mask, chosen_response_mask) 
+        reference_rejected_logprobs = find_log_probs(reference_model, rejected_inp_ids, rejected_attn_mask, rejected_response_mask) 
+
+        ref_accuracy += (reference_chosen_logprobs > reference_rejected_logprobs).sum().item()
+        dpo_accuracy += (policy_chosen_logprobs > policy_rejected_logprobs).sum().item()
+    
     
         r_c = policy_chosen_logprobs - reference_chosen_logprobs
         r_r = policy_rejected_logprobs - reference_rejected_logprobs
@@ -169,3 +236,5 @@ with torch.no_grad():
         preference_accuracy +=  correct_pairs
     
     print(f"Preference Accuracy : {(preference_accuracy/len(test_loader.dataset)):.2f}")
+    print(f"Refernce Accuracy : {(ref_accuracy/len(test_loader.dataset)):.2f}")
+    print(f"DPO Accuracy : {(dpo_accuracy/len(test_loader.dataset)):.2f}")
