@@ -1,12 +1,16 @@
 
 import torch
+import time
+import json
+import os
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from torch.optim import AdamW
 from functools import partial
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer
-
+from constants import save_dir
+torch.manual_seed(42)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 ds = load_dataset("Anthropic/hh-rlhf")
@@ -33,8 +37,9 @@ for param in reference_model.parameters():
 # Goal: Increase the relative probability of chosen responses over rejected responses while regularizing against the reference model through the DPO objective.
 
 class PreferenceDataset(Dataset): 
-    def __init__(self, dataset, tokenizer, max_length): 
-        self.ds = dataset.select(range(1000)) 
+    def __init__(self, dataset, tokenizer, max_length, data_type, samples_count): 
+        print(f"Type : {data_type}, samples count : {samples_count}")
+        self.ds = dataset.select(range(samples_count)) 
         self.tokenizer = tokenizer 
         self.max_length = max_length 
         self.dataset = [] 
@@ -69,7 +74,8 @@ class PreferenceDataset(Dataset):
     def _get_common_prefix_length(self, chosen_inp_ids, chosen_attn_mask, rejected_inp_ids, rejected_attn_mask):
         # Find the common prefix 
         common = 0 
-        for i in range(self.max_length): 
+        max_len = min(len(chosen_inp_ids), len(rejected_inp_ids))
+        for i in range(max_len): 
             if chosen_attn_mask[i] and rejected_attn_mask[i]: 
                 if chosen_inp_ids[i] == rejected_inp_ids[i]: 
                     common += 1
@@ -115,9 +121,11 @@ class PreferenceDataset(Dataset):
             "rejected_response_mask" : rejected_response_mask
         }
 
-
-train_dataset = PreferenceDataset(train_dataset, tokenizer, 512)
-test_dataset = PreferenceDataset(test_dataset, tokenizer, 512)
+TRAIN_SAMPLES_COUNT = 3000
+TEST_SAMPLES_COUNT = 1000
+name = "dpo_3k"
+train_dataset = PreferenceDataset(train_dataset, tokenizer, 512, data_type = "Train", samples_count = TRAIN_SAMPLES_COUNT)
+test_dataset = PreferenceDataset(test_dataset, tokenizer, 512, data_type = "Test", samples_count = TEST_SAMPLES_COUNT)
 
 def collate_fn(samples, tokenizer):
     # Apply dynamic padding
@@ -211,8 +219,11 @@ num_epochs = 3
 train_batches_cnt = len(train_loader)
 beta = 0.1
 
+total_updates = 0
+epoch_stats = []
 for epoch in range(1, num_epochs+1): 
     total_loss = 0.0
+    start_time = time.time()
     for batch in train_loader: 
         chosen_inp_ids = batch["chosen_inp_ids"].to(device)
         chosen_attn_mask = batch["chosen_attn_mask"].to(device)
@@ -239,8 +250,14 @@ for epoch in range(1, num_epochs+1):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        total_updates += 1
 
-    print(f"Epoch : {epoch}/{num_epochs}, Loss : {(total_loss/train_batches_cnt):.2f}")
+    avg_loss = (total_loss/train_batches_cnt)
+    time_taken = (time.time() - start_time)
+    print(f"Epoch : {epoch}/{num_epochs}, Loss : {avg_loss:.2f}, Time taken : {time_taken:.3f} sec")
+    epoch_stats.append({"Epoch" : epoch, "Loss" : round(avg_loss, 3), "Time" : round(time_taken, 3)})
+
+print(f"Total Optimizer updates : {total_updates}")
 
 policy_model.eval()
 with torch.no_grad():
@@ -274,5 +291,24 @@ with torch.no_grad():
         preference_accuracy +=  correct_pairs
     
     print(f"Preference Accuracy : {(preference_accuracy/len(test_loader.dataset)):.2f}")
-    print(f"Refernce Accuracy : {(ref_accuracy/len(test_loader.dataset)):.2f}")
+    print(f"Reference Accuracy : {(ref_accuracy/len(test_loader.dataset)):.2f}")
     print(f"DPO Accuracy : {(dpo_accuracy/len(test_loader.dataset)):.2f}")
+
+
+os.makedirs(f"{save_dir}/{name}", exist_ok=True)
+
+policy_model.save_pretrained(f"{save_dir}/{name}/policy")
+tokenizer.save_pretrained(f"{save_dir}/{name}/policy")
+
+results = {
+    "TRAIN_SAMPLES_COUNT": TRAIN_SAMPLES_COUNT,
+    "TEST_SAMPLES_COUNT": TEST_SAMPLES_COUNT,
+    "total_updates": total_updates,
+    "epoch_stats": epoch_stats,
+    "preference_accuracy": round(preference_accuracy / len(test_loader.dataset), 3),
+    "ref_accuracy": round(ref_accuracy / len(test_loader.dataset), 3),
+    "dpo_accuracy": round(dpo_accuracy / len(test_loader.dataset), 3)
+}
+
+with open(f"{save_dir}/{name}/results.json", "w") as f:
+    json.dump(results, f, indent=4)
