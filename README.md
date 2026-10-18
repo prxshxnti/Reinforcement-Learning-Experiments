@@ -17,9 +17,7 @@ Refernce Accuracy : 0.55
 DPO Accuracy : 0.55
 
 ### Bug - Reference accuracy is varying when the model is frozen
-Count of samples : 1000
-Skipped instances : 7
-Skipped instances : 11
+`Count of samples : 1000`
 
 Epoch : 1/3, Loss : 0.74
 Epoch : 2/3, Loss : 0.16
@@ -28,9 +26,7 @@ Preference Accuracy : 0.59
 Refernce Accuracy : 0.55
 DPO Accuracy : 0.56
 
-Count of samples : 3000
-Skipped instances : 25
-Skipped instances : 39
+`Count of samples : 3000`
 
 Epoch : 1/3, Loss : 0.76
 Epoch : 2/3, Loss : 0.16
@@ -39,9 +35,7 @@ Preference Accuracy : 0.57
 Refernce Accuracy : 0.53
 DPO Accuracy : 0.53
 
-Count of samples : 5000
-Skipped instances : 37
-Skipped instances : 113
+`Count of samples : 5000`
 
 Epoch : 1/3, Loss : 0.75
 Epoch : 2/3, Loss : 0.18
