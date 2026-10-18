@@ -5,7 +5,11 @@ from torch.utils.data import Dataset, DataLoader
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from torch.optim import AdamW
 import time
+import os
+from functools import partial 
 
+os.makedirs("./checkpoints/sft_final", exist_ok=True)
+torch.manual_seed(42)
 device = ("cuda" if torch.cuda.is_available() else "cpu") 
 
 print(f"Pytorch version : {torch.__version__}")
@@ -18,19 +22,18 @@ alpaca_dataset = load_dataset("tatsu-lab/alpaca", split="train")
 print(f"Len of Alpaca dataset : {len(alpaca_dataset)}")
  
 alpaca_dataset = alpaca_dataset.train_test_split(test_size = 0.1, seed=42)
-train_dataset , test_dataset = alpaca_dataset["train"], alpaca_dataset["test"]
+train_dataset , val_dataset = alpaca_dataset["train"], alpaca_dataset["test"]
 print(f"Len of train dataset : {len(train_dataset)}")
-print(f"Len of test dataset : {len(test_dataset)}")
+print(f"Len of validation dataset : {len(val_dataset)}")
 
-print(f"\nOne instance : {test_dataset[0]}\n")
-print(f"\nOne instance keys : {test_dataset[0].keys()}\n")
+print(f"\nOne instance : {val_dataset[0]}\n")
+print(f"\nOne instance keys : {val_dataset[0].keys()}\n")
 
 
 # Create Dataset and DataLoader
 class AlpacaDataset(Dataset): 
-    def __init__(self, dataset, tokenizer, max_length): 
-        pick = min(len(dataset), 1000)
-        self.dataset = dataset.select(range(pick))
+    def __init__(self, dataset, tokenizer, max_length, samples_count): 
+        self.dataset = dataset.select(range(samples_count))
         self.tokenizer = tokenizer 
         self.max_length = max_length
 
@@ -50,27 +53,15 @@ class AlpacaDataset(Dataset):
         response_ids = self.tokenizer(response_text)["input_ids"]
 
         input_ids = prompt_ids + response_ids 
+        attention_mask = [1] * len(input_ids) 
         
         # Create labels
         labels = [-100] * len(prompt_ids) + response_ids
 
-        # Truncation 
-        input_ids = input_ids[:self.max_length]
-        labels = labels[:self.max_length]
-
-        # Pad both sequences 
-        padding_length = self.max_length - len(input_ids)
-        attention_mask = [1] * len(input_ids) 
-
-        if padding_length > 0 : 
-            input_ids += [self.tokenizer.pad_token_id] * padding_length 
-            labels += [-100] * padding_length
-            attention_mask += [0] * padding_length
-
         return {
-            "input_ids" : torch.tensor(input_ids), 
-            "attention_mask" : torch.tensor(attention_mask), 
-            "labels" : torch.tensor(labels)
+            "input_ids" : torch.tensor(input_ids, dtype=torch.long), 
+            "attention_mask" : torch.tensor(attention_mask, dtype=torch.long), 
+            "labels" : torch.tensor(labels, dtype=torch.long), 
         }
 
 
@@ -79,21 +70,57 @@ MODEL_NAME = "Qwen/Qwen2.5-0.5B"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
+train_samples = 5000
+test_samples = 500
+train_dataset = AlpacaDataset(train_dataset, tokenizer, max_length = 512, samples_count = train_samples)
+val_dataset = AlpacaDataset(val_dataset, tokenizer, max_length=512, samples_count = test_samples)
 
-train_dataset = AlpacaDataset(train_dataset, tokenizer, max_length = 512)
-test_dataset = AlpacaDataset(test_dataset, tokenizer, max_length=512)
+print(f"Training samples count : {train_samples}")
+print(f"Test samples count : {test_samples}")
 
-train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=4, shuffle=False)
+def collate_fn(samples, tokenizer): 
+    max_len = 0
+    for sample in samples: 
+        max_len = max(max_len, len(sample["input_ids"]))
 
+    
+    if max_len > 512: 
+        max_len = 512 #Truncation
+        
+    batch = {
+        "input_ids" : [],
+        "attention_mask" : [],
+        "labels" : [],
+    }
+
+    for sample in samples: 
+
+        input_ids = sample["input_ids"][:max_len]
+        attention_mask = sample["attention_mask"][:max_len]
+        labels = sample["labels"][:max_len]
+
+        padding_length = max_len - len(input_ids)
+        input_ids = torch.cat([input_ids, torch.full((padding_length,), tokenizer.pad_token_id, dtype=torch.long)])
+        attention_mask = torch.cat([attention_mask, torch.zeros((padding_length, ), dtype=torch.long)])
+        labels = torch.cat([labels, torch.full((padding_length, ), -100, dtype=torch.long)])
+
+        batch["input_ids"].append(input_ids)
+        batch["attention_mask"].append(attention_mask)
+        batch["labels"].append(labels)
+
+    for key in batch:
+        batch[key] = torch.stack(batch[key])
+    
+    return batch 
+
+train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, collate_fn = partial(collate_fn, tokenizer=tokenizer))
+val_loader = DataLoader(val_dataset, batch_size=4, shuffle=False, collate_fn = partial(collate_fn, tokenizer=tokenizer))
 
 print(f"One instance from dataset : {train_dataset[0]['input_ids'].shape}")
 print(f"One batch from dataloader : {next(iter(train_loader))['input_ids'].shape}")
 
-
 # Creating a optimizer 
 optimizer = AdamW(model.parameters(), lr=2e-5, weight_decay=0.01)
-
 num_epochs = 10
 
 # Move the model and data to device 
@@ -130,11 +157,20 @@ before_response = generate_response(
 print("BEFORE FINE-TUNING:")
 print(before_response)
 
+best_loss = 1e7
+checkpoint_path = "./checkpoints/sft_final"
+step_count = 0
+
+# Early stopping rules
+patience_counter = 0
+patience_limit = 3
+min_delta = 0.001
+
 for epoch in range(1, num_epochs + 1): 
-    model.train()
     total_train_loss = 0.0
     start_time = time.time()
     for batch in train_loader: 
+        model.train()
         batch = {k : v.to(device) for k, v in batch.items()}
         logits = model(input_ids = batch["input_ids"], attention_mask = batch["attention_mask"], labels=batch["labels"])
         
@@ -142,40 +178,64 @@ for epoch in range(1, num_epochs + 1):
         total_train_loss += loss.item()
         
         optimizer.zero_grad()
-        
         loss.backward()
-        
+        # Before updating the parameters - clip the gradients 
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0) 
         optimizer.step()
 
-    avg_train_loss = total_train_loss / len(train_loader)
+        step_count += 1
 
-    model.eval()
-    total_test_loss = 0.0
-    with torch.no_grad():
-        for batch in test_loader: 
-            test_batch = {k : v.to(device) for k, v in batch.items()}
-            logits = model(input_ids=test_batch["input_ids"],
-                           attention_mask=test_batch["attention_mask"], labels = test_batch["labels"])
-    
-            loss = logits.loss.item()
-            total_test_loss += loss
-    
-        avg_test_loss = total_test_loss/ len(test_loader) 
-        perplexity = torch.exp(torch.tensor(avg_test_loss)).item()
+        if step_count % 200 == 0: 
+            print(f"Evaluating at {step_count}th step")
+
+            model.eval()
+            total_val_loss = 0.0
+            with torch.no_grad():
+                for batch in val_loader: 
+                    val_batch = {k : v.to(device) for k, v in batch.items()}
+                    logits = model(input_ids=val_batch["input_ids"],
+                                    attention_mask=val_batch["attention_mask"], labels = val_batch["labels"])
+            
+                    loss = logits.loss.item()
+                    total_val_loss += loss
+            
+                avg_val_loss = total_val_loss/ len(val_loader) 
+                perplexity = torch.exp(torch.tensor(avg_val_loss)).item()
+
+            print(f"Evaluation results :: Validation loss : {avg_val_loss:.4f}") # If the loss consistently improves by tiny amounts, such as 0.0002, and those improvements are meaningful for task, better to reduce threshold to 0.0001.
+
+            if avg_val_loss < best_loss and (best_loss - avg_val_loss) > min_delta: 
+                print(f"Best loss found at {step_count}th step") 
+
+                # Save checkpoint    
+                model.save_pretrained(checkpoint_path)
+                tokenizer.save_pretrained(checkpoint_path)
+                print(f"SFT checkpoint saved to {checkpoint_path}")
+
+                best_loss = avg_val_loss
+                patience_counter = 0 
+
+            else : 
+                patience_counter += 1
+                if patience_counter >= patience_limit: 
+                    print(f"Exiting inner loop due to exceed in patience limits")
+                    break 
+
+    if patience_counter >= patience_limit: 
+        print(f"Exiting outer loop due to exceed in patience limits")
+        break 
         
-    print(f"Epoch : {epoch} / {num_epochs} :: Time taken : {time.time() - start_time} :: Train Loss : {avg_train_loss:.4f} :: Test loss : {avg_test_loss:.4f}")
+    avg_train_loss = total_train_loss / len(train_loader)
+    print(f"Epoch : {epoch} / {num_epochs} :: Time taken : {time.time() - start_time} :: Train Loss : {avg_train_loss:.4f}")
 
 
-# Save final SFT checkpoint
-checkpoint_path = "./checkpoints/sft_final"
+best_model = AutoModelForCausalLM.from_pretrained(checkpoint_path)
+best_tokenizer = AutoTokenizer.from_pretrained(checkpoint_path)
 
-model.save_pretrained(checkpoint_path)
-tokenizer.save_pretrained(checkpoint_path)
-
-print(f"SFT checkpoint saved to {checkpoint_path}")
+best_model = best_model.to(device)
 
 after_response = generate_response(
-    model, tokenizer, instruction, device
+    best_model, best_tokenizer, instruction, device
 )
 
 print("\nAFTER FINE-TUNING:")
