@@ -29,6 +29,9 @@ print(f"Len of validation dataset : {len(val_dataset)}")
 print(f"\nOne instance : {val_dataset[0]}\n")
 print(f"\nOne instance keys : {val_dataset[0].keys()}\n")
 
+def build_prompt_template(instruction, inp=""): 
+    user = instruction if not inp else f"{instruction}\n\n{inp}"
+    return f"### Instruction:\n{user}\n\n### Response:\n"
 
 # Create Dataset and DataLoader
 class AlpacaDataset(Dataset): 
@@ -45,18 +48,25 @@ class AlpacaDataset(Dataset):
 
         instruction = sample["instruction"]
         output = sample["output"]
+        inp = sample["input"]
 
-        prompt_text = f"### Instruction ### \n {instruction} \n "
-        response_text = f"### Output ### \n {output} \n " + self.tokenizer.eos_token
+        prompt_text = build_prompt_template(instruction, inp)
+        response_text = output
         
-        prompt_ids = self.tokenizer(prompt_text)["input_ids"]
-        response_ids = self.tokenizer(response_text)["input_ids"]
+        prompt_ids = self.tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
+        response_ids = self.tokenizer(response_text, add_special_tokens=False)["input_ids"] + [self.tokenizer.eos_token_id]
 
         input_ids = prompt_ids + response_ids 
         attention_mask = [1] * len(input_ids) 
         
         # Create labels
         labels = [-100] * len(prompt_ids) + response_ids
+
+        assert input_ids[-1] == self.tokenizer.eos_token_id  # Input ends with EOS. Ensures the final input token is the end-of-sequence token.
+        assert labels[-1] == self.tokenizer.eos_token_id # EOS contributes to training loss. Ensures the model is trained to predict EOS, teaching it when to stop.
+        assert all(x == -100 for x in labels[:len(prompt_ids)]) # Prompt loss is masked. Ensures prompt tokens have label `-100`, so the model isn't trained to predict the prompt itself.
+        assert len(input_ids) == len(labels) #Input and labels are aligned. Ensures each input token has a corresponding label.
+        # Together, these checks verify that the model sees the prompt, learns to generate the answer, and receives a training signal to stop at EOS.
 
         return {
             "input_ids" : torch.tensor(input_ids, dtype=torch.long), 
@@ -129,7 +139,7 @@ model = model.to(device)
 def generate_response(model, tokenizer, instruction, device):
     model.eval()
 
-    prompt = f"### Instruction ### \n {instruction} \n ### Output ### \n "
+    prompt = build_prompt_template(instruction)
 
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
 

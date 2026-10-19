@@ -72,7 +72,7 @@ DPO Accuracy : 0.56
 Preference accuracy measures whether the policy's relative improvement over the reference favors chosen over rejected responses. 
 DPO accuracy measures whether the policy's chosen-response log-probability exceeds its rejected-response log-probability. 
 
-## Fix in SFT Training 
+## Fix in SFT Training (v2)
 1. Dynamic Padding - To improve speed 
 2. Check data quality - Percentage of samples with more than 512 tokens : 0.03
 Average length of input ids : 78.6098
@@ -83,3 +83,11 @@ Zero response is present in 512 length : 0
 4. Early stopping with patience upto 3 evals
 5. Running the Pipeline on 5K training samples and fixed 500 samples
 6. Gradient Clippping 
+
+## Fix in SFT Training (v2_1)
+1. Prompt template: Fixed the format mismatch between training and inference, reducing unwanted `### Explanation ###` and `### Output ###` headers in generated responses.
+2. EOS token: Explicitly added EOS to each target and included it in the loss, teaching the model where responses should end.
+
+Evidence from your evaluation: The repeated headers disappeared across the 50 responses(v2 vs v2.1), and several answers now terminate cleanly.
+
+Still not fixed: Repetitive answers, incorrect reasoning, and instruction-following failures. These require dataset cleaning and further evaluation.
