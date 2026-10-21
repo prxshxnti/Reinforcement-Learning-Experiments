@@ -124,3 +124,21 @@ Important: These results support an improvement in response behavior, but we hav
 
 ## Goal :
 Does DPO or GRPO improve on this fixed SFT baseline under the same evaluation prompts and scoring rubric?
+
+
+## Type 1 : Reward Model + PPO setup 
+Training a reward model using the Bradley–Terry preference loss on the Anthropic HH-RLHF dataset. Score the chosen and rejected responses, then train the model to assign a higher reward to the chosen response.
+
+BaseLine RewardModel Stats: 
+
+Samples used for testing : 500
+Epoch 1/5, Loss: 0.7645
+Test Preference Accuracy: 0.5080
+Epoch 2/5, Loss: 0.5274
+Test Preference Accuracy: 0.5340
+Epoch 3/5, Loss: 0.3000
+Test Preference Accuracy: 0.5760
+Epoch 4/5, Loss: 0.0550
+Test Preference Accuracy: 0.5660
+Epoch 5/5, Loss: 0.0339
+Test Preference Accuracy: 0.5720
