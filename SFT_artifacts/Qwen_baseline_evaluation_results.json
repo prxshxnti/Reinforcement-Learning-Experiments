@@ -1,0 +1,361 @@
+{
+  "metadata": {
+    "prompts_file": "./eval_prompts.json",
+    "prompt_count": 50,
+    "max_new_tokens": 150,
+    "do_sample": false,
+    "device": "cuda"
+  },
+  "results": [
+    {
+      "prompt_id": "eval_001",
+      "category": "factual",
+      "prompt": "What is the capital of Australia?",
+      "response": "Canberra",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_002",
+      "category": "factual",
+      "prompt": "What is the difference between a CPU and a GPU?",
+      "response": "1. CPU: A central processing unit is a small, integrated circuit that is used to perform calculations and processes data. It is responsible for executing instructions and performing calculations. \n 2. GPU: A graphics processing unit is a specialized computer component that is used to perform complex mathematical calculations and image processing tasks. It is responsible for rendering images and performing other graphics-related tasks. \n 3. CPU vs GPU: The CPU and GPU are two different types of computer components. The CPU is responsible for executing instructions and performing calculations, while the GPU is responsible for rendering images and performing other graphics-related tasks. \n 4. CPU vs GPU: The CPU and GPU are two different types of computer components. The CPU is responsible for executing instructions and performing",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_003",
+      "category": "factual",
+      "prompt": "What does RAM do in a computer?",
+      "response": "1. RAM is the main memory of a computer. \n 2. RAM is a type of memory that stores data temporarily. \n 3. RAM is used to store data that is being used by the computer. \n 4. RAM is a type of memory that is faster than hard disk drives. \n 5. RAM is a type of memory that is used to store data that is being used by the computer. \n 6. RAM is a type of memory that is used to store data that is being used by the computer. \n 7. RAM is a type of memory that is used to store data that is being used by the computer. \n 8. RAM is a type of memory that is used to store data",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_004",
+      "category": "factual",
+      "prompt": "What is the full form of API?",
+      "response": "1. Application Programming Interface\n 2. Application Programming Interface\n 3. Application Programming Interface\n 4. Application Programming Interface\n 5. Application Programming Interface\n 6. Application Programming Interface\n 7. Application Programming Interface\n 8. Application Programming Interface\n 9. Application Programming Interface\n 10. Application Programming Interface\n 11. Application Programming Interface\n 12. Application Programming Interface\n 13. Application Programming Interface\n 14. Application Programming Interface\n 15. Application Programming Interface\n 16. Application Programming Interface\n 17. Application Programming Interface\n 18. Application Programming Interface\n 19. Application Programming Interface\n 20. Application Programming Interface",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_005",
+      "category": "factual",
+      "prompt": "What is the boiling point of water at standard atmospheric pressure in Celsius?",
+      "response": "100.0",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_006",
+      "category": "factual",
+      "prompt": "What is the difference between supervised and unsupervised learning?",
+      "response": "1. Supervised learning is a type of machine learning where the model is trained on labeled data, and the goal is to predict the target variable based on the input features. \n 2. Unsupervised learning is a type of machine learning where the model is trained on unlabeled data, and the goal is to find patterns and structures in the data.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_007",
+      "category": "factual",
+      "prompt": "What is a database index, and why is it useful?",
+      "response": "1. A database index is a data structure that stores information about a table in a database. It allows for faster access to data by providing a way to quickly locate and retrieve specific rows or columns in the table.\n 2. Indexes are particularly useful when dealing with large tables, as they can significantly improve the performance of queries that involve searching for specific data. By creating an index on a column, the database can quickly locate the data it needs, reducing the time it takes to retrieve the data.\n 3. Indexes can also be used to optimize the performance of queries that involve joins or subqueries. By creating an index on a column that is used in a join or subquery, the database can quickly locate the data it needs,",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_008",
+      "category": "factual",
+      "prompt": "What does HTTP 404 mean?",
+      "response": "404 Not Found\n ### Code ### \n 1000\n ### Explanation ### \n 404 Not Found\n ### Code ### \n 1000\n ### Explanation ### \n 404 Not Found\n ### Code ### \n 1000\n ### Explanation ### \n 404 Not Found\n ### Code ### \n 1000\n ### Explanation ### \n 404 Not Found\n ### Code ### \n 1000\n ### Explanation ### \n 404 Not Found\n ### Code ### \n 1000\n ### Explanation ### \n 404 Not Found\n ### Code ### \n 1000\n ### Explanation ### \n 404",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_009",
+      "category": "factual",
+      "prompt": "What is the purpose of a loss function in machine learning?",
+      "response": "1. Loss function is a function that measures the difference between the predicted output and the actual output. \n 2. It is used to evaluate the performance of a machine learning model. \n 3. The loss function is used to optimize the model by adjusting the parameters to minimize the difference between the predicted output and the actual output. \n 4. The loss function is used to train the model by adjusting the parameters to minimize the difference between the predicted output and the actual output. \n 5. The loss function is used to evaluate the performance of a machine learning model by comparing the predicted output with the actual output. \n 6. The loss function is used to optimize the model by adjusting the parameters to minimize the difference between the predicted output",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_010",
+      "category": "factual",
+      "prompt": "What is the difference between training data and test data?",
+      "response": "1. Training data is used to train the model. \n 2. Test data is used to evaluate the model. \n 3. Training data is used to train the model. \n 4. Test data is used to evaluate the model. \n 5. Training data is used to train the model. \n 6. Test data is used to evaluate the model. \n 7. Training data is used to train the model. \n 8. Test data is used to evaluate the model. \n 9. Training data is used to train the model. \n 10. Test data is used to evaluate the model. \n 11. Training data is used to train the model. \n 12. Test data",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_011",
+      "category": "factual",
+      "prompt": "What is gradient descent used for?",
+      "response": "1. Gradient descent is a method for finding the minimum of a function by iteratively moving in the direction of steepest descent. \n 2. It is used to find the minimum of a function by iteratively moving in the direction of steepest descent. \n 3. It is used to find the minimum of a function by iteratively moving in the direction of steepest descent. \n 4. It is used to find the minimum of a function by iteratively moving in the direction of steepest descent. \n 5. It is used to find the minimum of a function by iteratively moving in the direction of steepest descent. \n 6. It is used to find the minimum of a function by",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_012",
+      "category": "factual",
+      "prompt": "What is the difference between a process and a thread?",
+      "response": "1. A process is a single program that runs on a computer. \n 2. A thread is a single program that runs on a computer. \n 3. A process is a collection of threads. \n 4. A thread is a collection of processes. \n 5. A process is a collection of threads. \n 6. A thread is a collection of processes. \n 7. A process is a collection of threads. \n 8. A thread is a collection of processes. \n 9. A process is a collection of threads. \n 10. A thread is a collection of processes. \n 11. A process is a collection of threads. \n 12. A thread is a collection",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_013",
+      "category": "reasoning",
+      "prompt": "A notebook costs ₹40. How much do 7 notebooks cost?",
+      "response": "280\n### Solution ### \n 40 * 7 = 280",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_014",
+      "category": "reasoning",
+      "prompt": "If all roses are flowers and some flowers fade quickly, can we conclude that some roses fade quickly? Explain.",
+      "response": "1. Yes\n 2. No\n 3. Not enough information\n 4. None of the above\n 5. Yes, because roses are flowers and some flowers fade quickly.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_015",
+      "category": "reasoning",
+      "prompt": "A train travels 120 km in 2 hours at a constant speed. How far will it travel in 5 hours?",
+      "response": "1200 km",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_016",
+      "category": "reasoning",
+      "prompt": "Find the next number: 2, 6, 12, 20, 30, __.",
+      "response": "42\n### Solution ### \n 20 + 12 = 32\n 32 + 12 = 44\n 44 + 12 = 56\n 56 + 12 = 68\n 68 + 12 = 80\n 80 + 12 = 92\n 92 + 12 = 104\n 104 + 12 = 116\n 116 + 12 = 128\n 128 + 12 = 140\n 140 + 12 = 152\n 1",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_017",
+      "category": "reasoning",
+      "prompt": "If yesterday was Monday, what day is the day after tomorrow?",
+      "response": "2\n ### Solution ### \n 2\n ### Explanation ### \n 2 is the day after tomorrow, which is Monday.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_018",
+      "category": "reasoning",
+      "prompt": "A shirt costs ₹1,000 after a 20% discount. What was its original price?",
+      "response": "1000",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_019",
+      "category": "reasoning",
+      "prompt": "There are 5 machines that produce 5 items in 5 minutes. How long would 100 machines take to produce 100 items, assuming equal rates?",
+      "response": "100 machines would take 100 minutes to produce 100 items.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_020",
+      "category": "reasoning",
+      "prompt": "You have 3 boxes labeled Apples, Oranges, and Mixed. All labels are incorrect. You can pick one fruit from one box. How can you correctly label all boxes?",
+      "response": "1. Apples\n 2. Oranges\n 3. Mixed\n 4. Apples\n 5. Oranges\n 6. Mixed\n 7. Apples\n 8. Oranges\n 9. Mixed\n 10. Apples\n 11. Oranges\n 12. Mixed\n 13. Apples\n 14. Oranges\n 15. Mixed\n 16. Apples\n 17. Oranges\n 18. Mixed\n 19. Apples\n 20. Oranges\n 21. Mixed\n 22. Apples\n 23. Oranges\n 24. Mixed",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_021",
+      "category": "reasoning",
+      "prompt": "A number is divisible by both 6 and 8. Must it be divisible by 24? Explain.",
+      "response": "120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_022",
+      "category": "reasoning",
+      "prompt": "If x + 3 = 10 and y = 2x, what is y?",
+      "response": "12\n### Solution ### \n x + 3 = 10\n x = 10 - 3\n x = 7\n y = 2x\n y = 2 * 7\n y = 14\n### Explanation ### \n x + 3 = 10\n x = 10 - 3\n x = 7\n y = 2x\n y = 2 * 7\n y = 14",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_023",
+      "category": "reasoning",
+      "prompt": "A bag contains 3 red and 2 blue balls. What is the probability of randomly selecting a blue ball?",
+      "response": "0.6666666666666666",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_024",
+      "category": "reasoning",
+      "prompt": "Two people complete a task in 6 hours together. Can you determine how long each person takes individually? Why or why not?",
+      "response": "1.1 hours\n 1.2 hours\n 1.3 hours\n 1.4 hours\n 1.5 hours\n 1.6 hours\n 1.7 hours\n 1.8 hours\n 1.9 hours\n 2.0 hours\n 2.1 hours\n 2.2 hours\n 2.3 hours\n 2.4 hours\n 2.5 hours\n 2.6 hours\n 2.7 hours\n 2.8 hours\n 2.9 hours\n 3.0 hours\n 3.1 hours\n 3.2 hours\n 3.3 hours\n 3.4 hours\n 3.5 hours",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_025",
+      "category": "reasoning",
+      "prompt": "A student answers 18 out of 20 questions correctly. What percentage did the student score?",
+      "response": "90.0",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_026",
+      "category": "explanation",
+      "prompt": "Explain reinforcement learning to a beginner using a simple example.",
+      "response": "1. Reinforcement learning is a type of machine learning where an agent learns to make decisions by receiving rewards or penalties for its actions. \n 2. In reinforcement learning, the agent interacts with an environment and receives feedback in the form of rewards or penalties. \n 3. The agent learns to make decisions by adjusting its behavior based on the feedback it receives. \n 4. Reinforcement learning is often used in games, robotics, and other domains where the agent needs to learn how to make decisions in a given environment. \n 5. The agent learns to make decisions by interacting with the environment and receiving feedback in the form of rewards or penalties. \n 6. The agent learns to make decisions by adjusting its behavior based on the feedback",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_027",
+      "category": "explanation",
+      "prompt": "Explain the difference between correlation and causation.",
+      "response": "1. Correlation is a statistical measure that describes the strength and direction of the relationship between two variables. It is used to determine whether there is a relationship between two variables, but it does not imply causation. \n 2. Causation is a scientific explanation that suggests that one event causes another event. It is based on the idea that there is a cause-and-effect relationship between two events. \n 3. Correlation can be used to identify potential causes of a relationship, but it cannot prove that one event caused the other. \n 4. Causation can be tested through experiments or other methods, but correlation cannot be used to prove causation. \n 5. Correlation is a useful tool for understanding relationships between variables",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_028",
+      "category": "explanation",
+      "prompt": "Why do neural networks use activation functions?",
+      "response": "1. Activation functions are used to introduce non-linearity into the model. \n 2. Non-linearity is important for the model to learn complex patterns. \n 3. Activation functions are used to introduce non-linearity into the model. \n 4. Non-linearity is important for the model to learn complex patterns. \n 5. Activation functions are used to introduce non-linearity into the model. \n 6. Non-linearity is important for the model to learn complex patterns. \n 7. Activation functions are used to introduce non-linearity into the model. \n 8. Non-linearity is important for the model to learn complex patterns. \n 9. Activation functions are used to introduce non-linearity into the model",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_029",
+      "category": "explanation",
+      "prompt": "Explain overfitting and give one way to reduce it.",
+      "response": "1. Overfitting is when a model performs well on the training data but poorly on new, unseen data. \n 2. One way to reduce overfitting is to use regularization techniques such as L1 or L2 regularization. \n 3. Another way to reduce overfitting is to use cross-validation to evaluate the model on different subsets of the data. \n 4. Another way to reduce overfitting is to use feature selection techniques such as feature importance or feature selection algorithms. \n 5. Another way to reduce overfitting is to use ensemble methods such as bagging or boosting. \n 6. Another way to reduce overfitting is to use regularization techniques such as L1 or L2 regularization.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_030",
+      "category": "explanation",
+      "prompt": "What is backpropagation, and how does it help train a neural network?",
+      "response": "1. Backpropagation is a technique used to train a neural network by adjusting the weights of the network based on the error between the predicted output and the actual output. \n 2. It works by calculating the gradient of the loss function with respect to the weights, and then adjusting the weights in the opposite direction to minimize the loss. \n 3. This process is repeated for each training example, and the weights are updated iteratively until the loss function converges to a minimum. \n 4. Backpropagation is particularly useful for training deep neural networks, as it allows for the fine-tuning of the weights of each layer of the network. \n 5. It is also used in other machine learning algorithms, such as reinforcement learning",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_031",
+      "category": "explanation",
+      "prompt": "Explain the attention mechanism in Transformers using an intuitive example.",
+      "response": "1. The attention mechanism is a mechanism that allows the model to focus on different parts of the input sequence by taking into account the context of the entire sequence. \n 2. In Transformers, the attention mechanism is implemented using the `torch.nn.MultiheadAttention` module. \n 3. The `MultiheadAttention` module takes two inputs: the query and the key. The query is a 2D tensor of shape (batch_size, hidden_size), and the key is a 2D tensor of shape (batch_size, hidden_size). The output is a 2D tensor of shape (batch_size, hidden_size). \n 4. The `MultiheadAttention` module uses the `torch.bmm` function to perform matrix",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_032",
+      "category": "explanation",
+      "prompt": "What is the difference between precision and recall?",
+      "response": "1. Precision is the ratio of the number of true positives to the number of true positives and false positives. \n 2. Recall is the ratio of the number of true positives to the number of true positives and false negatives. \n 3. Precision is the ratio of the number of true positives to the number of true positives and all positives. \n 4. Recall is the ratio of the number of true positives to the number of true positives and all negatives. \n 5. Precision is the ratio of the number of true positives to the number of true positives and all negatives. \n 6. Recall is the ratio of the number of true positives to the number of true positives and all positives. \n 7. Precision is the ratio",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_033",
+      "category": "explanation",
+      "prompt": "Why do we split a dataset into training, validation, and test sets?",
+      "response": "1. Training set: 10% of the data\n 2. Validation set: 20% of the data\n 3. Test set: 10% of the data\n 4. The training set is used to train the model\n 5. The validation set is used to evaluate the model\n 6. The test set is used to evaluate the model on unseen data\n 7. The model is trained on the training set\n 8. The model is evaluated on the validation set\n 9. The model is evaluated on the test set\n 10. The model is tested on unseen data\n 11. The model is tested on unseen data\n 12. The model is",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_034",
+      "category": "explanation",
+      "prompt": "Explain what an API is using a real-world analogy.",
+      "response": "1. An API is like a secret code that allows you to talk to a website or service without knowing the password. \n 2. Imagine you are trying to unlock a door to your favorite restaurant. You need to enter a code that is a secret code that only you know. \n 3. The code is like the API. It's a secret code that only you can use to talk to the restaurant. \n 4. The restaurant is like the website or service. It's a place where you can talk to the restaurant and get food. \n 5. The code is like the password. It's the secret code that you need to enter to talk to the restaurant. \n 6. The restaurant is like the website or",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_035",
+      "category": "explanation",
+      "prompt": "What is regularization in machine learning, and why is it useful?",
+      "response": "1. Regularization is a technique used in machine learning to prevent overfitting. Overfitting occurs when a model is too complex and captures noise in the training data, leading to poor generalization to new data. Regularization helps to reduce the complexity of the model by adding a penalty term to the loss function. This penalty term discourages the model from learning unnecessary features, making it easier to generalize to new data. \n 2. Regularization is useful because it helps to prevent overfitting by reducing the complexity of the model. This can lead to better generalization to new data, as the model is less likely to be too complex and capture noise in the training data. Regularization can also help to prevent overfitting by reducing",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_036",
+      "category": "explanation",
+      "prompt": "Explain the difference between an encoder and a decoder in a Transformer.",
+      "response": "1. Encoder: A transformer is a type of neural network that is used for sequence-to-sequence tasks. It consists of multiple layers of encoders, which are used to transform input sequences into intermediate representations. The encoder is responsible for encoding the input sequence into a fixed-length vector representation, which is then fed into the decoder for further processing.\n 2. Decoder: A transformer is also a type of neural network that is used for sequence-to-sequence tasks. It consists of multiple layers of decoders, which are used to transform intermediate representations into output sequences. The decoder is responsible for decoding the output sequences back into the input sequences, and it is responsible for generating the final output sequence.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_037",
+      "category": "explanation",
+      "prompt": "Why can increasing the size of a training dataset fail to improve model performance?",
+      "response": "1. The model may not be able to generalize well to new data. \n 2. The model may overfit the training data. \n 3. The model may not be able to handle new data. \n 4. The model may not be able to handle new data. \n 5. The model may not be able to handle new data. \n 6. The model may not be able to handle new data. \n 7. The model may not be able to handle new data. \n 8. The model may not be able to handle new data. \n 9. The model may not be able to handle new data. \n 10. The model may not be able to handle new data.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_038",
+      "category": "instruction_following",
+      "prompt": "Explain photosynthesis in exactly two sentences.",
+      "response": "1. Photosynthesis is the process by which plants convert light energy into chemical energy in the form of glucose. \n 2. This process occurs in the chloroplasts of plant cells, where light energy is absorbed by chlorophyll and used to convert carbon dioxide and water into glucose and oxygen.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_039",
+      "category": "instruction_following",
+      "prompt": "Give exactly three benefits of unit testing. Use a numbered list.",
+      "response": "1. Unit testing is a way to test individual components of a program. \n 2. Unit testing is a way to test the overall functionality of a program. \n 3. Unit testing is a way to test the code that is used to create the program.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_040",
+      "category": "instruction_following",
+      "prompt": "Explain what a database is in no more than 30 words.",
+      "response": "1. A database is a collection of data organized in a structured format. \n 2. A database is a collection of data organized in a structured format. \n 3. A database is a collection of data organized in a structured format. \n 4. A database is a collection of data organized in a structured format. \n 5. A database is a collection of data organized in a structured format. \n 6. A database is a collection of data organized in a structured format. \n 7. A database is a collection of data organized in a structured format. \n 8. A database is a collection of data organized in a structured format. \n 9. A database is a collection of data organized in a structured format",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_041",
+      "category": "instruction_following",
+      "prompt": "Summarize the purpose of gradient descent in one sentence without using equations.",
+      "response": "1. Gradient Descent is a method used to find the minimum of a function by iteratively adjusting the parameters of the function until convergence. \n 2. It is a popular optimization algorithm used in machine learning and artificial intelligence to find the best parameters for a model. \n 3. Gradient descent is used to minimize the cost function of a model by iteratively adjusting the parameters until the cost function converges to a minimum. \n 4. It is a method used to find the minimum of a function by iteratively adjusting the parameters of the function until convergence. \n 5. It is a method used to find the minimum of a function by iteratively adjusting the parameters of the function until convergence. \n 6. It is a method",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_042",
+      "category": "instruction_following",
+      "prompt": "Compare Python and C++ using exactly three bullet points.",
+      "response": "1. Python is a high-level, interpreted, and object-oriented programming language. \n 2. C++ is a high-level, compiled, and object-oriented programming language. \n 3. Python is a statically typed language, while C++ is a dynamically typed language.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_043",
+      "category": "instruction_following",
+      "prompt": "Explain recursion to a beginner, then provide exactly one simple example.",
+      "response": "1. Recursion is a process of calling a function to itself, often with a smaller or simpler problem, until a base case is reached. \n 2. The base case is the simplest or most basic case that the function can reach. \n 3. The function calls itself with a smaller or simpler problem until it reaches the base case. \n 4. The function continues to call itself until it reaches the base case, at which point it stops calling itself. \n 5. The function then returns the result of the base case. \n 6. The function continues to call itself with a smaller or simpler problem until it reaches the base case, at which point it stops calling itself. \n 7. The function then returns the",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_044",
+      "category": "instruction_following",
+      "prompt": "List five even numbers greater than 10 and less than 30. Do not include any explanation.",
+      "response": "12, 14, 16, 18, 20",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_045",
+      "category": "instruction_following",
+      "prompt": "Write a polite email declining a meeting invitation because of a scheduling conflict. Keep it under 80 words.",
+      "response": "1. I am sorry, but I have a conflict with my schedule. I will not be able to attend the meeting. \n 2. I am sorry, but I have a conflict with my schedule. I will not be able to attend the meeting. \n 3. I am sorry, but I have a conflict with my schedule. I will not be able to attend the meeting. \n 4. I am sorry, but I have a conflict with my schedule. I will not be able to attend the meeting. \n 5. I am sorry, but I have a conflict with my schedule. I will not be able to attend the meeting. \n 6. I am sorry, but I have a conflict with my schedule.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_046",
+      "category": "instruction_following",
+      "prompt": "Explain cloud computing using an analogy, without using the words “internet” or “server.”",
+      "response": "1. Cloud computing is like a big, shared library of computing resources that you can access from anywhere in the world. \n 2. Think of it like a big, shared library of books that you can borrow and read from anywhere in the world. \n 3. Imagine that you have a big, shared library of books that you can borrow and read from anywhere in the world. \n 4. The books in the library are like the computing resources in the cloud. \n 5. You can access the books in the library from anywhere in the world, like you can access the books from your home or office. \n 6. The books in the library are like the computing resources in the cloud. \n 7. You can",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_047",
+      "category": "instruction_following",
+      "prompt": "Give two advantages and two disadvantages of remote work in a table.",
+      "response": "1. Advantages: \n 1.1. It allows employees to work from anywhere in the world, which can be beneficial for remote workers who may have to travel frequently. \n 1.2. It can help to reduce commuting time and costs, as employees can work from home or at a different location. \n 1.3. It can also help to improve productivity and efficiency, as employees can work on their own schedule and not have to worry about meeting deadlines. \n 1.2. Disadvantages: \n 2.1. It can be challenging to maintain a sense of community and collaboration in a remote work environment. \n 2.2. It can be difficult to establish and maintain a sense of accountability and",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_048",
+      "category": "instruction_following",
+      "prompt": "Define machine learning in exactly 15 words.",
+      "response": "1. Machine learning is the process of using algorithms and statistical models to enable computers to learn from data and make predictions or decisions. \n 2. Machine learning is a subset of artificial intelligence that focuses on developing algorithms and models that can learn from data and make predictions or decisions. \n 3. Machine learning is a powerful tool that can be used to automate tasks, improve decision-making, and enhance the performance of complex systems. \n 4. Machine learning involves the use of algorithms and statistical models to analyze data and make predictions or decisions. \n 5. Machine learning is a subset of artificial intelligence that focuses on developing algorithms and models that can learn from data and make predictions or decisions. \n 6. Machine learning is a powerful tool that",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_049",
+      "category": "instruction_following",
+      "prompt": "Explain the difference between supervised and unsupervised learning in exactly four bullet points.",
+      "response": "1. Supervised learning is a type of machine learning where the model is trained on labeled data, and the goal is to predict the target variable based on the input features. \n 2. Unsupervised learning is a type of machine learning where the model is trained on unlabeled data, and the goal is to find patterns and structures in the data. \n 3. Supervised learning is often used for tasks such as classification, regression, and clustering. \n 4. Unsupervised learning is often used for tasks such as anomaly detection, dimensionality reduction, and data visualization.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_050",
+      "category": "instruction_following",
+      "prompt": "Answer the following question with only “Yes” or “No”: Is 17 a prime number?",
+      "response": "17 is not a prime number.",
+      "checkpoint": "SFT_Model"
+    }
+  ]
+}

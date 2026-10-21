@@ -1,0 +1,361 @@
+{
+  "metadata": {
+    "prompts_file": "./eval_prompts.json",
+    "prompt_count": 50,
+    "max_new_tokens": 150,
+    "do_sample": false,
+    "device": "cuda"
+  },
+  "results": [
+    {
+      "prompt_id": "eval_001",
+      "category": "factual",
+      "prompt": "What is the capital of Australia?",
+      "response": "Canberra",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_002",
+      "category": "factual",
+      "prompt": "What is the difference between a CPU and a GPU?",
+      "response": "A CPU is the central processing unit of a computer, which is responsible for performing calculations and data processing tasks. A GPU is a type of GPU that is designed to be used for graphics processing tasks, such as rendering and animation. A CPU is responsible for performing basic calculations and data processing tasks, while a GPU is designed to be used for more complex tasks, such as graphics rendering and animation.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_003",
+      "category": "factual",
+      "prompt": "What does RAM do in a computer?",
+      "response": "RAM (Random Access Memory) is a type of memory that allows a computer to access data quickly and efficiently. It is used to store data and instructions that are needed for a program to run. RAM is typically divided into two parts: the main memory and the cache. The main memory is the physical memory that is used to store data and instructions, while the cache is a small amount of memory that is used to store frequently accessed data.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_004",
+      "category": "factual",
+      "prompt": "What is the full form of API?",
+      "response": "Application Programming Interface",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_005",
+      "category": "factual",
+      "prompt": "What is the boiling point of water at standard atmospheric pressure in Celsius?",
+      "response": "100°C",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_006",
+      "category": "factual",
+      "prompt": "What is the difference between supervised and unsupervised learning?",
+      "response": "Supervised learning is a type of machine learning where the model is trained on labeled data, while unsupervised learning is a type of machine learning where the model is trained on unlabeled data. Supervised learning models are trained on labeled data and can be used to make predictions or classify data, while unsupervised learning models are trained on unlabeled data and can be used to find patterns or relationships in data.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_007",
+      "category": "factual",
+      "prompt": "What is a database index, and why is it useful?",
+      "response": "A database index is a data structure that is used to speed up the retrieval of data from a database. It is created by adding a column to the table that contains the index key, which is used to quickly locate the data. This allows for faster retrieval of data, as well as faster search and retrieval of data. Indexes are also useful for optimizing the performance of queries, as they allow for faster retrieval of data.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_008",
+      "category": "factual",
+      "prompt": "What does HTTP 404 mean?",
+      "response": "404 Not Found",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_009",
+      "category": "factual",
+      "prompt": "What is the purpose of a loss function in machine learning?",
+      "response": "A loss function is a mathematical function used to measure the error between the predicted output and the actual output. It is used to optimize the model by adjusting the weights of the model to minimize the error.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_010",
+      "category": "factual",
+      "prompt": "What is the difference between training data and test data?",
+      "response": "Training data is used to train the model, while test data is used to evaluate the model. Training data is used to adjust the model parameters, while test data is used to measure the model's performance.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_011",
+      "category": "factual",
+      "prompt": "What is gradient descent used for?",
+      "response": "Gradient descent is used for finding the minimum of a function by iteratively adjusting the parameters of the function until the function reaches its minimum.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_012",
+      "category": "factual",
+      "prompt": "What is the difference between a process and a thread?",
+      "response": "A process is a collection of one or more threads that run in the same memory space. A thread is a single piece of code that runs in its own memory space. A process is a collection of multiple threads that run in the same memory space.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_013",
+      "category": "reasoning",
+      "prompt": "A notebook costs ₹40. How much do 7 notebooks cost?",
+      "response": "280",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_014",
+      "category": "reasoning",
+      "prompt": "If all roses are flowers and some flowers fade quickly, can we conclude that some roses fade quickly? Explain.",
+      "response": "Yes, we can conclude that some roses fade quickly.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_015",
+      "category": "reasoning",
+      "prompt": "A train travels 120 km in 2 hours at a constant speed. How far will it travel in 5 hours?",
+      "response": "600 km",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_016",
+      "category": "reasoning",
+      "prompt": "Find the next number: 2, 6, 12, 20, 30, __.",
+      "response": "36",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_017",
+      "category": "reasoning",
+      "prompt": "If yesterday was Monday, what day is the day after tomorrow?",
+      "response": "Tuesday",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_018",
+      "category": "reasoning",
+      "prompt": "A shirt costs ₹1,000 after a 20% discount. What was its original price?",
+      "response": "1,000",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_019",
+      "category": "reasoning",
+      "prompt": "There are 5 machines that produce 5 items in 5 minutes. How long would 100 machines take to produce 100 items, assuming equal rates?",
+      "response": "100 machines would take 100 minutes to produce 100 items.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_020",
+      "category": "reasoning",
+      "prompt": "You have 3 boxes labeled Apples, Oranges, and Mixed. All labels are incorrect. You can pick one fruit from one box. How can you correctly label all boxes?",
+      "response": "1. Apples \n 2. Oranges \n 3. Mixed",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_021",
+      "category": "reasoning",
+      "prompt": "A number is divisible by both 6 and 8. Must it be divisible by 24? Explain.",
+      "response": "6 is divisible by 24.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_022",
+      "category": "reasoning",
+      "prompt": "If x + 3 = 10 and y = 2x, what is y?",
+      "response": "10",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_023",
+      "category": "reasoning",
+      "prompt": "A bag contains 3 red and 2 blue balls. What is the probability of randomly selecting a blue ball?",
+      "response": "1/3",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_024",
+      "category": "reasoning",
+      "prompt": "Two people complete a task in 6 hours together. Can you determine how long each person takes individually? Why or why not?",
+      "response": "1. Person A takes 3 hours to complete the task alone. \n 2. Person B takes 4 hours to complete the task alone. \n 3. Person A takes 3 hours to complete the task alone. \n 4. Person B takes 4 hours to complete the task alone. \n 5. Person A takes 3 hours to complete the task alone. \n 6. Person B takes 4 hours to complete the task alone.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_025",
+      "category": "reasoning",
+      "prompt": "A student answers 18 out of 20 questions correctly. What percentage did the student score?",
+      "response": "85%",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_026",
+      "category": "explanation",
+      "prompt": "Explain reinforcement learning to a beginner using a simple example.",
+      "response": "Reinforcement learning is a type of machine learning that involves an agent learning to take actions in an environment in order to maximize a reward. The agent is rewarded for taking the optimal action in the environment, and the agent learns from its experiences. The agent is rewarded for taking the action that leads to the highest reward, and the agent is rewarded for taking the action that leads to the highest reward. The agent is rewarded for taking the action that leads to the highest reward, and the agent is rewarded for taking the action that leads to the highest reward. The agent is rewarded for taking the action that leads to the highest reward, and the agent is rewarded for taking the action that leads to the highest reward. The agent is rewarded for taking the action that",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_027",
+      "category": "explanation",
+      "prompt": "Explain the difference between correlation and causation.",
+      "response": "Correlation is a statistical measure that describes the relationship between two variables, while causation is a causal relationship between two variables. Correlation measures the strength of the relationship between two variables, while causation measures the cause of the relationship. Correlation is a measure of the strength of the relationship between two variables, while causation is a measure of the cause of the relationship. Correlation is a measure of the strength of the relationship between two variables, while causation is a measure of the cause of the relationship. Correlation is a measure of the strength of the relationship between two variables, while causation is a measure of the cause of the relationship. Correlation is a measure of the strength of the relationship between two variables, while causation is",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_028",
+      "category": "explanation",
+      "prompt": "Why do neural networks use activation functions?",
+      "response": "Neural networks use activation functions to introduce non-linearities into the model, which allows the model to learn complex patterns in the data. Activation functions are used to introduce non-linearities into the model, which allows the model to learn complex patterns in the data.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_029",
+      "category": "explanation",
+      "prompt": "Explain overfitting and give one way to reduce it.",
+      "response": "Overfitting is the phenomenon of a model that is too complex and fits the training data too closely, resulting in poor performance on unseen data. One way to reduce overfitting is to use regularization techniques such as dropout, L1 or L2 regularization, or to use a simpler model with fewer parameters.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_030",
+      "category": "explanation",
+      "prompt": "What is backpropagation, and how does it help train a neural network?",
+      "response": "Backpropagation is a technique used to train a neural network by adjusting the weights of the network based on the error between the predicted output and the actual output. It is used to minimize the error between the predicted output and the actual output, which helps the network to learn and improve its performance.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_031",
+      "category": "explanation",
+      "prompt": "Explain the attention mechanism in Transformers using an intuitive example.",
+      "response": "The attention mechanism in Transformers is used to focus on the most important parts of the input sequence. It works by taking into account the context of the input and the output of the previous layer. This allows the model to focus on the most important parts of the input sequence and make more accurate predictions.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_032",
+      "category": "explanation",
+      "prompt": "What is the difference between precision and recall?",
+      "response": "Precision is the ratio of the number of true positives to the total number of positive predictions, while recall is the ratio of the number of true positives to the total number of actual positives. Precision is a measure of how well a classifier is able to correctly identify positive instances, while recall is a measure of how well a classifier is able to correctly identify positive instances.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_033",
+      "category": "explanation",
+      "prompt": "Why do we split a dataset into training, validation, and test sets?",
+      "response": "1. The purpose of splitting a dataset into training, validation, and test sets is to evaluate the model's performance on unseen data. \n 2. By splitting the dataset into training and validation sets, we can assess the model's performance on unseen data. \n 3. The test set is used to evaluate the model's performance on unseen data. \n 4. By splitting the dataset into training, validation, and test sets, we can ensure that the model is not overfitting to the training data. \n 5. By splitting the dataset into training, validation, and test sets, we can ensure that the model is not overfitting to the training data. \n 6. By splitting the dataset into training, validation,",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_034",
+      "category": "explanation",
+      "prompt": "Explain what an API is using a real-world analogy.",
+      "response": "An API is like a bridge between two worlds. It connects two different systems, allowing them to communicate and exchange data. Just like a bridge, it can be used to connect different parts of a system, allowing for easier communication and collaboration.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_035",
+      "category": "explanation",
+      "prompt": "What is regularization in machine learning, and why is it useful?",
+      "response": "Regularization is a technique used in machine learning to prevent overfitting. It is done by adding a penalty term to the cost function, which encourages the model to have less complexity and to generalize better. Regularization helps to prevent the model from overfitting to the training data, which can lead to poor performance on unseen data.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_036",
+      "category": "explanation",
+      "prompt": "Explain the difference between an encoder and a decoder in a Transformer.",
+      "response": "An encoder is a component of a Transformer that takes input data and produces a sequence of hidden states. A decoder is a component of a Transformer that takes the sequence of hidden states and produces output data. The encoder takes input data and produces a sequence of hidden states, while the decoder takes the sequence of hidden states and produces output data. The encoder and decoder are connected by a linear transformation, which is used to map the input data into the output data.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_037",
+      "category": "explanation",
+      "prompt": "Why can increasing the size of a training dataset fail to improve model performance?",
+      "response": "1. The size of the training dataset can be too small, resulting in a lack of diversity in the data. \n 2. The data may be too noisy, resulting in a lack of accuracy. \n 3. The data may be too small, resulting in a lack of accuracy. \n 4. The data may be too noisy, resulting in a lack of diversity. \n 5. The data may be too small, resulting in a lack of diversity.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_038",
+      "category": "instruction_following",
+      "prompt": "Explain photosynthesis in exactly two sentences.",
+      "response": "Photosynthesis is the process by which plants use sunlight to convert carbon dioxide and water into oxygen and glucose. The process begins with the absorption of light energy by the chloroplasts in the plant's leaves. The energy is then used to split water molecules into oxygen and hydrogen, which are then used to produce glucose. The glucose is then used to produce energy for the plant.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_039",
+      "category": "instruction_following",
+      "prompt": "Give exactly three benefits of unit testing. Use a numbered list.",
+      "response": "1. Unit testing helps to identify and fix errors early in the development process. \n 2. Unit testing can help to ensure that the code is free of bugs and errors. \n 3. Unit testing can help to ensure that the code is well-documented and easy to understand.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_040",
+      "category": "instruction_following",
+      "prompt": "Explain what a database is in no more than 30 words.",
+      "response": "A database is a collection of data organized in a structured format. It is used to store and retrieve data, and is typically used to store and retrieve information from a variety of sources.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_041",
+      "category": "instruction_following",
+      "prompt": "Summarize the purpose of gradient descent in one sentence without using equations.",
+      "response": "Gradient descent is a method of finding the minimum of a function by iteratively adjusting the parameters of the function.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_042",
+      "category": "instruction_following",
+      "prompt": "Compare Python and C++ using exactly three bullet points.",
+      "response": "1. Python is a high-level programming language that is easy to learn and use. \n 2. C++ is a compiled language that is faster than Python. \n 3. Python is a general-purpose language that is used for a wide range of applications. \n 4. C++ is a general-purpose language that is used for a wide range of applications. \n 5. Python is a general-purpose language that is used for a wide range of applications. \n 6. C++ is a compiled language that is faster than Python. \n 7. Python is a high-level programming language that is easy to learn and use. \n 8. C++ is a compiled language that is faster than Python. \n 9. Python",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_043",
+      "category": "instruction_following",
+      "prompt": "Explain recursion to a beginner, then provide exactly one simple example.",
+      "response": "Recursion is a technique used to solve problems by breaking them down into smaller subproblems. \n  For example, if you wanted to calculate the factorial of a number, you could use recursion to break it down into smaller subproblems. \n  The base case would be when the number is 0, in which case the factorial is 1. \n  The recursive case would be when the number is greater than 0, in which case the factorial would be the number multiplied by the factorial of the number minus one. \n  This process would be repeated until the base case is reached. \n  This process of breaking down a problem into smaller subproblems is known as recursion. \n  One simple example of recursion is calculating the sum of two",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_044",
+      "category": "instruction_following",
+      "prompt": "List five even numbers greater than 10 and less than 30. Do not include any explanation.",
+      "response": "12, 14, 16, 18, 20",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_045",
+      "category": "instruction_following",
+      "prompt": "Write a polite email declining a meeting invitation because of a scheduling conflict. Keep it under 80 words.",
+      "response": "Dear [Name], \n\nI am writing to decline your invitation to a meeting scheduled for [date]. I am aware of your busy schedule and I understand that you have other commitments. I am sorry for the inconvenience this may cause you. \n\nThank you for your consideration. \n\nSincerely, \n[Your Name]",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_046",
+      "category": "instruction_following",
+      "prompt": "Explain cloud computing using an analogy, without using the words “internet” or “server.”",
+      "response": "Cloud computing is like a giant cloud of data that can be accessed and used by anyone. It is like a giant library of information that can be accessed and used by anyone. It is like a giant library of data that can be accessed and used by anyone. It is like a giant library of data that can be accessed and used by anyone. It is like a giant library of data that can be accessed and used by anyone. It is like a giant library of data that can be accessed and used by anyone. It is like a giant library of data that can be accessed and used by anyone. It is like a giant library of data that can be accessed and used by anyone. It is like a giant library of data that can be accessed and",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_047",
+      "category": "instruction_following",
+      "prompt": "Give two advantages and two disadvantages of remote work in a table.",
+      "response": "1. Advantages: \n  - Flexibility: Remote work allows for greater flexibility in working hours and locations. \n  - Cost savings: Remote work can be more cost-effective than traditional office-based work. \n  - Access to talent: Remote work can provide access to a wider pool of talent. \n  - Improved productivity: Remote work can help employees to work more efficiently and effectively. \n  - Reduced stress: Remote work can help employees to reduce stress and improve their mental health. \n  - Improved communication: Remote work can help employees to communicate more effectively with their colleagues. \n  - Improved collaboration: Remote work can help employees to collaborate more effectively with their colleagues. \n  - Improved work-life balance: Remote work can help employees",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_048",
+      "category": "instruction_following",
+      "prompt": "Define machine learning in exactly 15 words.",
+      "response": "1. Machine learning is the process of creating a computer system that can learn from data and make predictions or decisions. \n 2. It involves using algorithms to identify patterns in data and then using these patterns to make predictions or decisions. \n 3. Machine learning is used in a variety of applications, such as natural language processing, image recognition, and autonomous systems. \n 4. It is also used in the development of artificial intelligence, which is the ability of machines to mimic human intelligence. \n 5. Machine learning is used to automate tasks, such as data analysis, and to make decisions based on data. \n 6. It is also used to develop predictive models, which can be used to forecast future events. \n 7",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_049",
+      "category": "instruction_following",
+      "prompt": "Explain the difference between supervised and unsupervised learning in exactly four bullet points.",
+      "response": "1. Supervised learning is used when the data is labeled and the goal is to predict the outcome. \n 2. Unsupervised learning is used when the data is unlabeled and the goal is to find patterns in the data. \n 3. Supervised learning is more accurate than unsupervised learning. \n 4. Unsupervised learning is more flexible than supervised learning.",
+      "checkpoint": "SFT_Model"
+    },
+    {
+      "prompt_id": "eval_050",
+      "category": "instruction_following",
+      "prompt": "Answer the following question with only “Yes” or “No”: Is 17 a prime number?",
+      "response": "17 is not a prime number.",
+      "checkpoint": "SFT_Model"
+    }
+  ]
+}

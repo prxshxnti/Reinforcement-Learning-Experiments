@@ -90,4 +90,37 @@ Zero response is present in 512 length : 0
 
 Evidence from your evaluation: The repeated headers disappeared across the 50 responses(v2 vs v2.1), and several answers now terminate cleanly.
 
-Still not fixed: Repetitive answers, incorrect reasoning, and instruction-following failures. These require dataset cleaning and further evaluation.
+## SFT versions
+V1/V2: Trained on instruction + output.
+V2.1: Trained on instruction + optional input + output, wrapped in the prompt template.
+
+## Final Verdict
+
+Based on your 50-prompt evaluation, SFT model is qualitatively better than the base model, especially in response quality and repetition. This is a qualitative comparison, not yet a formally scored benchmark.
+
+## Base model vs SFT
+
+| Criterion             | Base model                                   | SFT model                                                |
+| --------------------- | -------------------------------------------- | -------------------------------------------------------- |
+| Factual answers       | Often repetitive or poorly terminated        | More direct and concise                                  |
+| Relevance             | Sometimes drifts or repeats                  | More focused on the question                             |
+| Explanation quality   | Repetitive, with limited structure           | More coherent explanations                               |
+| Reasoning             | Several incorrect answers                    | Still makes mistakes; no clear overall win established   |
+| Instruction following | Often repeats content and misses constraints | Some improvement, but exact constraints are still missed |
+| Overall               | Less reliable response behavior              | Better assistant-style responses                         |
+
+## Where SFT improved
+
+- Repetition: Answers such as API definitions and HTTP explanations became more concise instead of repeating until the generation limit.
+- Response quality: Several factual answers became clear, relevant, and immediately usable.
+- Explanation structure: Some answers explain concepts more coherently instead of looping through the same statement.
+- Instruction-following behavior: Some outputs improved, although strict requirements—such as exactly two sentences or a fixed word count—remain a weakness.
+
+## What SFT has not solved
+
+The model still makes reasoning errors, including the number-sequence question, logical deduction, and arithmetic problems. It also occasionally repeats itself or ignores formatting constraints.
+
+Important: These results support an improvement in response behavior, but we have not established a numerical improvement in overall accuracy.
+
+## Goal :
+Does DPO or GRPO improve on this fixed SFT baseline under the same evaluation prompts and scoring rubric?

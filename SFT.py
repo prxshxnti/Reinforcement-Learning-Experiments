@@ -7,6 +7,8 @@ from torch.optim import AdamW
 import time
 import os
 from functools import partial 
+import random
+random.seed(42)
 
 os.makedirs("./checkpoints/sft_final", exist_ok=True)
 torch.manual_seed(42)
@@ -28,6 +30,11 @@ print(f"Len of validation dataset : {len(val_dataset)}")
 
 print(f"\nOne instance : {val_dataset[0]}\n")
 print(f"\nOne instance keys : {val_dataset[0].keys()}\n")
+
+# Removing 6 empty outputs samples found in Dataset auditing 
+train_dataset = train_dataset.filter(
+    lambda x: isinstance(x["output"], str) and bool(x["output"].strip())
+)
 
 def build_prompt_template(instruction, inp=""): 
     user = instruction if not inp else f"{instruction}\n\n{inp}"
@@ -66,6 +73,7 @@ class AlpacaDataset(Dataset):
         assert labels[-1] == self.tokenizer.eos_token_id # EOS contributes to training loss. Ensures the model is trained to predict EOS, teaching it when to stop.
         assert all(x == -100 for x in labels[:len(prompt_ids)]) # Prompt loss is masked. Ensures prompt tokens have label `-100`, so the model isn't trained to predict the prompt itself.
         assert len(input_ids) == len(labels) #Input and labels are aligned. Ensures each input token has a corresponding label.
+        assert all( labels[i] == input_ids[i] for i in range(len(prompt_ids), len(input_ids)) )
         # Together, these checks verify that the model sees the prompt, learns to generate the answer, and receives a training signal to stop at EOS.
 
         return {
@@ -80,13 +88,30 @@ MODEL_NAME = "Qwen/Qwen2.5-0.5B"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 
-train_samples = 5000
+train_samples = 10000
 test_samples = 500
 train_dataset = AlpacaDataset(train_dataset, tokenizer, max_length = 512, samples_count = train_samples)
 val_dataset = AlpacaDataset(val_dataset, tokenizer, max_length=512, samples_count = test_samples)
 
-print(f"Training samples count : {train_samples}")
-print(f"Test samples count : {test_samples}")
+
+# for j in random.sample(range(len(train_dataset.dataset)), 10):
+#     sample = train_dataset.dataset[j]
+
+#     print(f"\n{'='*60}")
+#     print(f"Sample {j}")
+#     print(f"Instruction: {sample['instruction']}")
+#     print(f"Input: {sample['input']}")
+#     print(f"Output: {sample['output']}")
+
+#     formatted_text = build_prompt_template(
+#         sample["instruction"], sample["input"]
+#     ) + sample["output"] + tokenizer.eos_token
+
+#     print(f"Formatted text:\n{formatted_text}")
+
+
+# print(f"Training samples count : {train_samples}")
+# print(f"Test samples count : {test_samples}")
 
 def collate_fn(samples, tokenizer): 
     max_len = 0
