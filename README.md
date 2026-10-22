@@ -142,3 +142,80 @@ Epoch 4/5, Loss: 0.0550
 Test Preference Accuracy: 0.5660
 Epoch 5/5, Loss: 0.0339
 Test Preference Accuracy: 0.5720
+
+Reward Model (v2)
+
+1. There is 3 datasets available. Train dataset to train the reward model, validation dataset to find the best checkpoint and the accuracy of the reward model on unseen data. Test dataset is to evaluate the best checkpoint across different versions of our Reward model to know whether increasing training samples or any other change improves the reward model on the whole. 
+2. For every epoch, post training, we validate on the validation dataset to get validation accuracy. If its best that previous validation accuracy, we store the checkpoint.
+3. After all epochs, Test on the best saved checkpoint (load best checkpoint) and calculate the preference accuracy on test dataset. 
+
+Result after v2 version : 
+
+
+Samples used for training : 5000
+Samples used for validation : 500
+Samples used for testing : 500
+
+Epoch 1/5, Loss: 0.7644
+Validation Preference Accuracy: 0.5460
+Saving checkpoint : Best validation accuracy found !
+Saved reward model checkpoint to ./checkpoints/reward_model.pt
+Epoch 2/5, Loss: 0.5333
+Validation Preference Accuracy: 0.5680
+Saving checkpoint : Best validation accuracy found !
+Saved reward model checkpoint to ./checkpoints/reward_model.pt
+Epoch 3/5, Loss: 0.2688
+Validation Preference Accuracy: 0.5700
+Saving checkpoint : Best validation accuracy found !
+Saved reward model checkpoint to ./checkpoints/reward_model.pt
+Epoch 4/5, Loss: 0.0518
+Validation Preference Accuracy: 0.5520
+Epoch 5/5, Loss: 0.0275
+Validation Preference Accuracy: 0.5620
+`Test Preference Accuracy: 0.5120`
+
+
+results:
+
+| Metric                   | Result |
+| ------------------------ | ------ |
+| Best validation accuracy | 57.0%  |
+| Test accuracy            | 51.2%  |
+| Training loss (epoch 5)  | 0.0275 |
+
+The gap between validation and test accuracy is concerning, I ran another controlled experiment by Increasing training data from 5,000 to 10,000 pairs. Keeping the same 500 validation and 500 test examples.
+
+
+### Running on 10k samples
+
+Samples used for training : 10000
+Samples used for validation : 500
+Samples used for testing : 500
+
+Epoch 1/5, Loss: 0.7109
+Validation Preference Accuracy: 0.5940
+Saving checkpoint : Best validation accuracy found !
+Saved reward model checkpoint to ./checkpoints/reward_model.pt
+Epoch 2/5, Loss: 0.5710
+Validation Preference Accuracy: 0.6240
+Saving checkpoint : Best validation accuracy found !
+Saved reward model checkpoint to ./checkpoints/reward_model.pt
+Epoch 3/5, Loss: 0.2138
+Validation Preference Accuracy: 0.6120
+Epoch 4/5, Loss: 0.0486
+Validation Preference Accuracy: 0.5960
+Epoch 5/5, Loss: 0.0449
+Validation Preference Accuracy: 0.6080
+`Test Preference Accuracy: 0.5640`
+Peak VRAM allocated: 9.69 GB
+
+results:
+
+| Metric                   | Result |
+| ------------------------ | ------ |
+| Best validation accuracy | 62.4%  |
+| Test accuracy            | 56.4%  |
+| Training loss (epoch 5)  | 0.0449 |
+
+verdict : 
+Increasing Data improves the accuracy of the reward model, thus suggesting our pipeline learns to score preferences given a preference dataset. 
