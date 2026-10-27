@@ -219,3 +219,65 @@ results:
 
 verdict : 
 Increasing Data improves the accuracy of the reward model, thus suggesting our pipeline learns to score preferences given a preference dataset. 
+
+## Bug Fixes in PPO setup
+
+1. Instead of collecting 50 rollout and 3 epochs and minibatches, this setup will consider one policy update as one PPO setup and Runs the pipeline for 50 PPO steps. 
+2. KL penalty is calculated incorrectly. 
+KL = log probs of old - log probs of ref
+log probs of ref policy > log probs of old policy, then KL < 0 
+R_total = R_rm - beta * KL
+For this case , negative KL increases total reward but in truth KL is how different a probability distribution of a token in comparison of reference module and updated model
+
+`Simplest fix` - torch.abs() applied to the KL value
+kl_per_sample = torch.abs(old_logprob_mean - ref_logprob_mean)
+Taking abs() prevents negative values, but it does not give a proper KL estimate. Comparing two average log-probabilities, loses token-level information.
+For each generated response token y_t, d_t = old log probs - ref log probs where d_t is token by token 
+A common non-negative sampled estimator is: k_t = e^-d_t - 1 + d_t
+Then average \(k_t\) over response tokens to get the KL penalty per sample. [ This presevers token level divergence info ]
+
+3. Distinguishing generated EOS tokens from padding when both use the same token ID.
+As per qwen 0.5B the model uses same id for EOS and padding which puts difficult in loss calcuation to distinguish the EOS token from padding token
+
+We can't reliably distinguish them using token IDs alone when pad_token_id == eos_token_id.
+
+Instead, we use the attention mask and sequence boundaries:
+- The original prompt's attention mask tells which prompt tokens are real.
+- Generation gives the response tokens and stopping boundary.
+- We build the full attention mask using those boundaries, rather than generated != pad_token_id.
+
+
+Later Enhancements :
+1. To use per token probability ratios instead of token level advantages
+2. To use a value/critic model
+
+
+# Post fixes baseline run logs and analysis
+
+Step 1/50 | RM Reward: -8.2500 | KL: 0.0000 | R_total: -8.2637
+Step 2/50 | RM Reward: -8.2500 | KL: 0.0000 | R_total: -8.2637
+Step 3/50 | RM Reward: -8.2500 | KL: 0.0000 | R_total: -8.2637
+Step 4/50 | RM Reward: -8.2500 | KL: 0.0000 | R_total: -8.2637
+Step 5/50 | RM Reward: -8.2500 | KL: 0.0000 | R_total: -8.2637
+.
+.
+.
+Step 46/50 | RM Reward: -8.0000 | KL: 0.0006 | R_total: -8.0078
+Step 47/50 | RM Reward: -8.0000 | KL: 0.0006 | R_total: -8.0078
+Step 48/50 | RM Reward: -8.0000 | KL: 0.0006 | R_total: -8.0078
+Step 49/50 | RM Reward: -5.8750 | KL: 0.0006 | R_total: -5.8711
+Step 50/50 | RM Reward: -5.8750 | KL: 0.0006 | R_total: -5.8711
+
+Observations:
+
+| Metric             | Observation                                          |
+| ------------------ | ---------------------------------------------------- |
+| Reward-model score | Negative, ranging roughly from −2 to −10             |
+| KL                 | Extremely small, around 0–0.001                      |
+| Repeated metrics   | Each group of 6 updates has identical rewards and KL |
+
+The repeated values are expected here: since we are reusing the same rollout for 3 epochs, with 2 mini-batches per epoch. So each rollout generates 6 updates.
+
+Major drawbacks:
+- Very small KL: The policy may barely have moved from the reference
+- Negative reward

@@ -10,9 +10,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 def format_prompt(sample):
     instruction = sample["instruction"]
     extra_input = sample.get("input", "")
-    if extra_input:
-        instruction = f"{instruction}\n{extra_input}"
-    return f"### Instruction ###\n{instruction}\n### Output ###\n"
+
+    user = instruction if not extra_input else f"{instruction}\n\n{extra_input}"
+    return f"### Instruction:\n{user}\n\n### Response:\n"
 
 
 class RewardModel(nn.Module):
@@ -25,11 +25,17 @@ class RewardModel(nn.Module):
     def forward(self, input_ids, attention_mask):
         outputs = self.backbone(input_ids=input_ids, attention_mask=attention_mask)
         hidden_states = outputs.last_hidden_state
+        
+        positions = torch.arange(
+            hidden_states.size(1), device=hidden_states.device
+        ).unsqueeze(0).expand_as(attention_mask)
 
-        lengths = attention_mask.sum(dim=1) - 1
-        lengths = lengths.clamp(min=0)
+        last_indices = positions.masked_fill(attention_mask == 0, -1).max(dim=1).values
+        last_indices = last_indices.clamp(min=0)
+
         batch_indices = torch.arange(hidden_states.size(0), device=hidden_states.device)
-        last_hidden = hidden_states[batch_indices, lengths]
+        last_hidden = hidden_states[batch_indices, last_indices]
+
 
         reward = self.reward_head(last_hidden)
         return reward.squeeze(-1)
@@ -56,6 +62,48 @@ def masked_mean(values, mask, eps=1e-8):
     denom = mask_f.sum(dim=1).clamp(min=eps)
     return (values * mask_f).sum(dim=1) / denom
 
+@torch.no_grad()
+def generate_with_lengths(policy, input_ids, attention_mask,
+                          max_new_tokens, eos_token_id):
+    generated = input_ids
+    finished = torch.zeros(
+        input_ids.size(0), dtype=torch.bool, device=input_ids.device
+    )
+    response_lengths = torch.zeros(
+        input_ids.size(0), dtype=torch.long, device=input_ids.device
+    )
+
+    for _ in range(max_new_tokens):
+        outputs = policy(
+            input_ids=generated,
+            attention_mask=attention_mask,
+        )
+        next_token = torch.multinomial(
+            torch.softmax(outputs.logits[:, -1, :].float(), dim=-1), 1
+        ).squeeze(1)
+
+        # Already-finished rows receive padding; don't count it as response.
+        next_token = torch.where(
+            finished,
+            torch.full_like(next_token, eos_token_id),
+            next_token,
+        )
+        generated = torch.cat([generated, next_token[:, None]], dim=1)
+
+        active = ~finished
+        response_lengths += active.long()
+        finished |= (next_token == eos_token_id)
+
+        attention_mask = torch.cat([
+            attention_mask, active.long().unsqueeze(1)
+        ], dim=1)
+
+        if finished.all():
+            break
+
+    return generated, attention_mask, response_lengths
+    
+
 
 def collect_rollout(policy, ref_model, reward_model, tokenizer, prompts, max_prompt_len, max_new_tokens, beta, device):
     encoded = tokenizer(
@@ -68,17 +116,21 @@ def collect_rollout(policy, ref_model, reward_model, tokenizer, prompts, max_pro
     encoded = {k: v.to(device) for k, v in encoded.items()}
 
     with torch.no_grad():
-        generated = policy.generate(
-            **encoded,
-            max_new_tokens=max_new_tokens,
-            do_sample=True,
-            top_p=0.95,
-            temperature=1.0,
-            pad_token_id=tokenizer.pad_token_id,
-            eos_token_id=tokenizer.eos_token_id,
+        generated, full_attention_mask, response_lengths = generate_with_lengths(
+            policy, encoded["input_ids"], encoded["attention_mask"],
+            max_new_tokens, tokenizer.eos_token_id
         )
 
-    full_attention_mask = (generated != tokenizer.pad_token_id).long() 
+    prompt_width = encoded["input_ids"].shape[1]
+    positions = torch.arange(
+        generated.shape[1] - 1, device=device
+    ).unsqueeze(0)
+    
+    response_mask = (
+        (positions >= prompt_width - 1)
+        & (positions < prompt_width + response_lengths.unsqueeze(1) - 1)
+    )
+        
     prompt_lens = encoded["attention_mask"].sum(dim=1) # Number of real tokens in each prompt.
     seq_lens = full_attention_mask.sum(dim=1) # Number of real tokens in the full sequence = prompt + generated response.
 
@@ -86,21 +138,18 @@ def collect_rollout(policy, ref_model, reward_model, tokenizer, prompts, max_pro
         old_logprobs_tokens = token_logprobs(policy, generated, full_attention_mask)
         ref_logprobs_tokens = token_logprobs(ref_model, generated, full_attention_mask)
 
-        response_mask = build_response_mask(
-            prompt_lens=prompt_lens,
-            seq_lens=seq_lens,
-            target_len=old_logprobs_tokens.size(1),
-            device=device,
-        )
+        # Calculate token level divergence
+        d_t = old_logprobs_tokens - ref_logprobs_tokens
+        k_t = torch.exp(-d_t) - 1 + d_t # This is sampled k3 KL estimator (non-negative mathematically)
 
-        old_logprob_mean = masked_mean(old_logprobs_tokens, response_mask) # mean of target probs 
-        ref_logprob_mean = masked_mean(ref_logprobs_tokens, response_mask)
-
-        kl_per_sample = old_logprob_mean - ref_logprob_mean
+        # Calculate per sample divergence and apply to reward 
+        kl_per_sample = masked_mean(k_t, response_mask)
         rm_reward = reward_model(generated, full_attention_mask)
         total_reward = rm_reward - beta * kl_per_sample
 
         advantages = (total_reward - total_reward.mean()) / (total_reward.std(unbiased=False) + 1e-8)
+
+        old_logprob_mean = masked_mean(old_logprobs_tokens, response_mask)
 
     return {
         "input_ids": generated,
@@ -131,6 +180,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(sft_checkpoint_path)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "left"
 
     policy = AutoModelForCausalLM.from_pretrained(sft_checkpoint_path, **model_kwargs).to(device) # The model that gets updated
     reference_policy = AutoModelForCausalLM.from_pretrained(sft_checkpoint_path, **model_kwargs).to(device) # The model that is used as a reference
@@ -213,14 +263,17 @@ def main():
                     torch.nn.utils.clip_grad_norm_(policy.parameters(), 1.0)
                     optimizer.step()
         
-        # ONE complete PPO step is finished
-        step += 1
-        print(
-            f"Step {step}/{ppo_steps} | "
-            f"RM Reward: {rollout['rm_reward'].mean().item():.4f} | "
-            f"KL: {rollout['kl'].mean().item():.4f} | "
-            f"R_total: {rollout['total_reward'].mean().item():.4f}"
-        )
+                    # ONE complete PPO step is finished
+                    step += 1
+                    print(f"Step {step}/{ppo_steps} | RM Reward: {rollout['rm_reward'].mean().item():.4f} | KL: {rollout['kl'].mean().item():.4f} | R_total: {rollout['total_reward'].mean().item():.4f}")
+                    if step >= ppo_steps : 
+                        break
+
+                if step >= ppo_steps : 
+                    break
+
+            if step >= ppo_steps : 
+                break
 
     os.makedirs(ppo_checkpoint_path, exist_ok=True)
     policy.save_pretrained(ppo_checkpoint_path)
